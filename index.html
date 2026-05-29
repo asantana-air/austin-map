@@ -407,6 +407,59 @@
 
   /* Map attribution */
   .leaflet-control-attribution { font-size: 9px !important; }
+
+  /* ── MOBILE ── */
+  @media (max-width: 768px) {
+    body { height: 100dvh; }
+
+    header {
+      padding: 0 16px;
+      height: 52px;
+      gap: 10px;
+    }
+    .logo { font-size: 18px; }
+    .logo svg { width: 22px; height: 22px; }
+    .header-title { font-size: 13px; padding-left: 12px; }
+    .header-subtitle { display: none; }
+    .header-count { font-size: 11px; padding: 3px 10px; }
+
+    .category-bar {
+      padding: 0 12px;
+      height: 60px;
+      gap: 6px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .cat-btn {
+      padding: 6px 10px;
+      min-width: 60px;
+      border-radius: 10px;
+    }
+    .cat-icon { font-size: 20px; }
+    .cat-label { font-size: 10px; }
+
+    /* Card: full-width sheet pinned to bottom */
+    #info-card {
+      bottom: 0;
+      left: 0;
+      right: 0;
+      transform: none;
+      width: 100%;
+      max-width: 100%;
+      border-radius: 20px 20px 0 0;
+      max-height: 55vh;
+      overflow-y: auto;
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(100%); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Bigger tap targets for quote nav */
+    .quote-nav-btn { width: 36px; height: 36px; font-size: 14px; }
+
+    /* Larger close button */
+    .card-close { width: 34px; height: 34px; }
+  }
 </style>
 </head>
 <body>
@@ -484,12 +537,19 @@ const CATEGORIES = {
 // Get unique categories present in data
 const presentCats = ['all', 'bar', 'restaurant', 'cafe', 'store', 'point_of_interest', 'park', 'museum'].filter(c => c === 'all' || POIS.some(p => p.category === c));
 
+// ── MOBILE DETECTION ──
+const isMobile = () => window.innerWidth <= 768 || ('ontouchstart' in window && window.innerWidth <= 1024);
+
 // ── MAP INIT ──
 const map = L.map('map', {
   center: [30.2672, -97.7431],
   zoom: 13,
-  zoomControl: true,
+  zoomControl: !isMobile(),
+  tap: false,
 });
+
+// Remove zoom controls on mobile (use pinch-to-zoom instead)
+if (isMobile()) map.zoomControl.remove();
 L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
   subdomains: 'abcd',
@@ -597,8 +657,18 @@ function openCard(poi, marker) {
   const card = document.getElementById('info-card');
   card.classList.add('visible');
 
-  // Pan map to show marker above card
-  map.panTo([poi.lat, poi.lng], { animate: true, duration: 0.4 });
+  // On mobile, offset the pan so marker sits above the bottom sheet card
+  if (isMobile()) {
+    const mapHeight = map.getSize().y;
+    const cardHeight = card.offsetHeight || mapHeight * 0.55;
+    // Convert lat/lng to pixel point, shift up by half the card height, convert back
+    const targetPoint = map.project([poi.lat, poi.lng], map.getZoom());
+    const offsetPoint = targetPoint.subtract([0, -(cardHeight / 2 + 60)]);
+    const targetLatLng = map.unproject(offsetPoint, map.getZoom());
+    map.panTo(targetLatLng, { animate: true, duration: 0.4 });
+  } else {
+    map.panTo([poi.lat, poi.lng], { animate: true, duration: 0.4 });
+  }
 }
 
 function renderQuotes() {
