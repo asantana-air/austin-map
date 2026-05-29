@@ -359,11 +359,29 @@
   .quote-slide {
     min-width: 100%;
     padding: 14px 16px;
-    font-size: 13px;
+    font-size: 15px;
     line-height: 1.6;
     color: var(--hof);
     font-style: italic;
     position: relative;
+  }
+  .read-more-btn {
+    display: inline;
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 600;
+    color: var(--rausch);
+    cursor: pointer;
+    margin-left: 2px;
+    text-decoration: none;
+  }
+  .read-more-btn:hover { text-decoration: underline; }
+  #info-card.expanded {
+    overflow-y: auto;
+    max-height: 80vh;
   }
   .quote-slide::before {
     content: "\201C";
@@ -439,7 +457,7 @@
 
     /* Card: full-width sheet pinned to bottom */
     #info-card {
-      bottom: 0;
+      bottom: 50px;
       left: 0;
       right: 0;
       transform: none;
@@ -682,9 +700,24 @@ function renderQuotes() {
   blurbs.forEach((b, i) => {
     const slide = document.createElement('div');
     slide.className = 'quote-slide';
-    // Truncate long quotes
-    const text = b.length > 280 ? b.slice(0, 277) + '…' : b;
-    slide.textContent = text;
+
+    const CAP = 280;
+    if (b.length > CAP) {
+      const preview = document.createTextNode(b.slice(0, CAP) + '… ');
+      const btn = document.createElement('button');
+      btn.className = 'read-more-btn';
+      btn.textContent = 'read more';
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        slide.innerHTML = '';
+        slide.appendChild(document.createTextNode(b));
+        document.getElementById('info-card').classList.add('expanded');
+      });
+      slide.appendChild(preview);
+      slide.appendChild(btn);
+    } else {
+      slide.textContent = b;
+    }
     track.appendChild(slide);
 
     const dot = document.createElement('div');
@@ -741,7 +774,9 @@ document.getElementById('quote-next').addEventListener('click', nextQuote);
 })();
 
 function closeCard() {
-  document.getElementById('info-card').classList.remove('visible');
+  const card = document.getElementById('info-card');
+  card.classList.remove('visible');
+  card.classList.remove('expanded');
 }
 document.getElementById('card-close').addEventListener('click', closeCard);
 
