@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Austin — Host Recommendations Map</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -29,9 +29,12 @@
     background: var(--white);
     color: var(--hof);
     height: 100vh;
+    height: -webkit-fill-available;
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    position: fixed;
+    width: 100%;
   }
 
   /* ── HEADER ── */
@@ -428,7 +431,7 @@
 
   /* ── MOBILE ── */
   @media (max-width: 768px) {
-    body { height: 100dvh; }
+    body { height: 100vh; height: -webkit-fill-available; }
 
     header {
       padding: 0 16px;
@@ -563,7 +566,6 @@ const map = L.map('map', {
   center: [30.2672, -97.7431],
   zoom: 13,
   zoomControl: !isMobile(),
-  tap: false,
 });
 
 // Remove zoom controls on mobile (use pinch-to-zoom instead)
