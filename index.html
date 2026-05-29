@@ -277,13 +277,55 @@
     letter-spacing: 0.1px;
   }
   .card-gmaps-link:hover { text-decoration: underline; color: #FF385C !important; }
-  .card-close {
+  /* ── HEART BUTTON ── */
+  .card-header-actions {
     position: absolute;
     top: 14px;
     right: 16px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .card-fave {
     width: 30px;
     height: 30px;
     border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--white);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, border-color 0.15s;
+    flex-shrink: 0;
+    padding: 0;
+  }
+  .card-fave:hover { background: var(--light-bg); }
+  .card-fave.faved { border-color: #FF385C; }
+  .card-fave svg { width: 15px; height: 15px; display: block; }
+
+  /* Heart badge on map marker — only shown when faved */
+  .marker-fave-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 16px;
+    height: 16px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+  .marker-fave-badge svg { width: 9px; height: 9px; display: block; }
+
+  .card-close {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    flex-shrink: 0;
     border: 1px solid var(--border);
     background: var(--white);
     cursor: pointer;
@@ -508,7 +550,14 @@
       <div class="card-name" id="card-name"></div>
       <div class="card-neighborhood" id="card-neighborhood"></div>
       <a class="card-gmaps-link" id="card-gmaps-link" href="#" target="_blank" rel="noopener noreferrer">View on Google Maps ↗</a>
-      <button class="card-close" id="card-close" title="Close">✕</button>
+      <div class="card-header-actions">
+        <button class="card-fave" id="card-fave" title="Save to favorites">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#BBBBBB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+        </button>
+        <button class="card-close" id="card-close" title="Close">✕</button>
+      </div>
     </div>
     <div class="card-stats">
       <div class="card-stat">
@@ -581,6 +630,11 @@ let activeCategory = 'all';
 let activeMarkerEl = null;
 let currentQuoteIndex = 0;
 let currentBlurbs = [];
+let currentPoi = null;
+const favorites = new Set();
+
+const HEART_SVG_FILLED = `<svg viewBox="0 0 24 24" fill="#FF385C" stroke="#FF385C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`;
+const HEART_SVG_EMPTY  = `<svg viewBox="0 0 24 24" fill="none" stroke="#BBBBBB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`;
 
 // ── CATEGORY BAR ──
 const bar = document.getElementById('category-bar');
@@ -661,6 +715,13 @@ function openCard(poi, marker) {
 
   currentBlurbs = poi.blurbs || [];
   currentQuoteIndex = 0;
+  currentPoi = poi;
+
+  // Sync heart state
+  const poiKey = poi.google_place_id || poi.name;
+  const faveBtn = document.getElementById('card-fave');
+  faveBtn.classList.toggle('faved', favorites.has(poiKey));
+  faveBtn.innerHTML = favorites.has(poiKey) ? HEART_SVG_FILLED : HEART_SVG_EMPTY;
 
   const cfg = CATEGORIES[poi.category] || CATEGORIES['point_of_interest'];
   document.getElementById('card-cat-pill').innerHTML = `${cfg.icon} ${cfg.label}`;
@@ -677,18 +738,21 @@ function openCard(poi, marker) {
   const card = document.getElementById('info-card');
   card.classList.add('visible');
 
-  // On mobile, offset the pan so marker sits above the bottom sheet card
-  if (isMobile()) {
+  // Pan so the marker appears just above the info card (desktop + mobile).
+  // Wait one frame so the card is rendered and offsetHeight is accurate.
+  requestAnimationFrame(() => {
+    const markerPx = map.latLngToContainerPoint([poi.lat, poi.lng]);
     const mapHeight = map.getSize().y;
-    const cardHeight = card.offsetHeight || mapHeight * 0.55;
-    // Convert lat/lng to pixel point, shift up by half the card height, convert back
-    const targetPoint = map.project([poi.lat, poi.lng], map.getZoom());
-    const offsetPoint = targetPoint.subtract([0, -(cardHeight / 2 + 60)]);
-    const targetLatLng = map.unproject(offsetPoint, map.getZoom());
-    map.panTo(targetLatLng, { animate: true, duration: 0.4 });
-  } else {
-    map.panTo([poi.lat, poi.lng], { animate: true, duration: 0.4 });
-  }
+    const cardHeight = card.offsetHeight;
+    const bottomOffset = isMobile() ? 50 : 32; // matches card's CSS bottom value
+    const gap = 32; // pixels of breathing room between marker and card top
+
+    // Where we want the marker to sit vertically
+    const targetY = mapHeight - cardHeight - bottomOffset - gap;
+    // Shift the map by the difference
+    const dy = markerPx.y - targetY;
+    map.panBy([0, dy], { animate: true, duration: 0.4 });
+  });
 }
 
 function renderQuotes() {
@@ -781,6 +845,41 @@ function closeCard() {
   card.classList.remove('expanded');
 }
 document.getElementById('card-close').addEventListener('click', closeCard);
+
+// ── FAVORITES ──
+function refreshMarker(poi) {
+  const key = poi.google_place_id || poi.name;
+  const entry = markers[key];
+  if (!entry) return;
+  const cfg = CATEGORIES[poi.category] || CATEGORIES['point_of_interest'];
+  const shortName = poi.name.length > 18 ? poi.name.slice(0, 16) + '…' : poi.name;
+  const mentions = poi.rec_count.toLocaleString();
+  const badge = favorites.has(key)
+    ? `<div class="marker-fave-badge"><svg viewBox="0 0 24 24" fill="#FF385C" stroke="#FF385C" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>`
+    : '';
+  entry.marker.setIcon(L.divIcon({
+    html: `<div class="poi-marker"><div class="marker-bubble" style="position:relative">${cfg.icon}${badge}</div><div class="marker-tail"></div><div class="marker-label">${shortName}</div><div class="marker-mentions">${mentions} mentions</div></div>`,
+    className: '',
+    iconSize: [120, 64],
+    iconAnchor: [60, 46],
+  }));
+}
+
+document.getElementById('card-fave').addEventListener('click', () => {
+  if (!currentPoi) return;
+  const key = currentPoi.google_place_id || currentPoi.name;
+  const faveBtn = document.getElementById('card-fave');
+  if (favorites.has(key)) {
+    favorites.delete(key);
+    faveBtn.classList.remove('faved');
+    faveBtn.innerHTML = HEART_SVG_EMPTY;
+  } else {
+    favorites.add(key);
+    faveBtn.classList.add('faved');
+    faveBtn.innerHTML = HEART_SVG_FILLED;
+  }
+  refreshMarker(currentPoi);
+});
 
 // Close card when clicking map (but not when clicking the card itself)
 map.on('click', () => closeCard());
