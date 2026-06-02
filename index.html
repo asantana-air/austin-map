@@ -1058,7 +1058,7 @@ function openCard(poi, marker) {
   document.getElementById('card-name').textContent = poi.name;
   document.getElementById('card-neighborhood').innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> ${poi.neighborhood}`;
   const gmapsLink = document.getElementById('card-gmaps-link');
-  gmapsLink.href = `https://www.google.com/maps/place/?q=place_id:${poi.google_place_id}`;
+  gmapsLink.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(poi.name)}&query_place_id=${poi.google_place_id}`;
   gmapsLink.style.display = poi.google_place_id ? 'inline-block' : 'none';
   document.getElementById('card-rec-count').textContent = poi.rec_count.toLocaleString();
   document.getElementById('card-guidebooks').textContent = `${poi.recommending_guidebooks} of ${poi.total_guidebooks}`;
