@@ -534,7 +534,13 @@
       width: 100%;
       max-width: 100%;
       border-radius: 20px 20px 0 0;
-      max-height: 55vh;
+      /* 100% = map container height; subtract bottom offset + top breathing room */
+      max-height: calc(100% - 41px);
+      overflow-y: auto;
+    }
+    /* On mobile, expanded state is same constraint — just scroll inside the card */
+    #info-card.expanded {
+      max-height: calc(100% - 41px);
       overflow-y: auto;
     }
     @keyframes slideUp {
