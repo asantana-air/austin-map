@@ -664,6 +664,129 @@
   }
   #add-home-btn svg { width: 20px; height: 20px; }
 
+  /* ── FOR YOU BUTTON ── */
+  #for-you-btn {
+    position: absolute;
+    top: 64px;
+    left: 16px;
+    z-index: 800;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--white);
+    border: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    transition: box-shadow 0.15s, transform 0.15s;
+  }
+  #for-you-btn:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.22); transform: scale(1.06); }
+  #for-you-btn.active { background: var(--rausch); box-shadow: 0 4px 16px rgba(255,56,92,0.35); }
+
+  /* ── FOR YOU QUIZ OVERLAY ── */
+  #for-you-overlay {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.18s ease, visibility 0.18s ease;
+  }
+  #for-you-overlay.visible { opacity: 1; visibility: visible; pointer-events: auto; }
+  #for-you-card {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 28px 24px 24px;
+    width: 440px;
+    max-width: calc(100vw - 32px);
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.2);
+    animation: slideUp 0.22s ease;
+  }
+  .fy-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  .fy-logo { font-size: 14px; font-weight: 700; color: var(--rausch); display: flex; align-items: center; gap: 5px; }
+  .fy-logo svg { width: 16px; height: 16px; }
+  .fy-close {
+    width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--border);
+    background: var(--white); cursor: pointer; display: flex; align-items: center;
+    justify-content: center; font-size: 13px; color: var(--foggy);
+  }
+  .fy-close:hover { background: var(--light-bg); }
+  .fy-progress {
+    display: flex; gap: 6px; margin-bottom: 20px;
+  }
+  .fy-progress-dot {
+    height: 3px; flex: 1; border-radius: 2px; background: var(--border);
+    transition: background 0.2s;
+  }
+  .fy-progress-dot.done { background: var(--rausch); }
+  .fy-step { display: none; }
+  .fy-step.active { display: block; }
+  .fy-question {
+    font-size: 20px; font-weight: 700; color: var(--hof);
+    line-height: 1.3; margin-bottom: 6px;
+  }
+  .fy-subtitle {
+    font-size: 13px; color: var(--foggy); margin-bottom: 18px;
+  }
+  .fy-options { display: flex; flex-direction: column; gap: 10px; }
+  .fy-option {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 16px; border-radius: 12px;
+    border: 1.5px solid var(--border); background: var(--white);
+    cursor: pointer; transition: border-color 0.15s, background 0.15s;
+    text-align: left;
+  }
+  .fy-option:hover { border-color: var(--hof); background: var(--light-bg); }
+  .fy-option.selected { border-color: var(--hof); background: var(--light-bg); }
+  .fy-option .fy-opt-icon { font-size: 22px; flex-shrink: 0; }
+  .fy-option .fy-opt-text { font-size: 14px; font-weight: 600; color: var(--hof); }
+  .fy-option .fy-opt-sub { font-size: 12px; color: var(--foggy); margin-top: 1px; }
+  .fy-actions {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 20px; gap: 10px;
+  }
+  .fy-back {
+    background: none; border: 1.5px solid var(--border); border-radius: 10px;
+    padding: 10px 18px; font-size: 13px; font-weight: 600; color: var(--foggy);
+    cursor: pointer; font-family: var(--font);
+  }
+  .fy-back:hover { border-color: var(--hof); color: var(--hof); }
+  .fy-next {
+    flex: 1; background: var(--hof); color: white; border: none;
+    border-radius: 10px; padding: 12px 20px; font-size: 14px;
+    font-weight: 700; cursor: pointer; font-family: var(--font);
+    transition: opacity 0.15s;
+  }
+  .fy-next:disabled { opacity: 0.35; cursor: default; }
+  .fy-next:not(:disabled):hover { opacity: 0.88; }
+  .fy-result-header {
+    text-align: center; padding: 8px 0 16px;
+  }
+  .fy-result-header .fy-emoji { font-size: 36px; margin-bottom: 8px; }
+  .fy-result-header h2 { font-size: 20px; font-weight: 700; color: var(--hof); margin-bottom: 4px; }
+  .fy-result-header p { font-size: 13px; color: var(--foggy); }
+
+  /* For You marker glow */
+  .poi-marker.for-you .marker-bubble {
+    border-color: var(--rausch);
+    box-shadow: 0 0 0 3px rgba(255,56,92,0.2), 0 2px 8px rgba(0,0,0,0.15);
+  }
+
   /* ── ADD HOME DIALOG ── */
   #home-dialog-overlay {
     display: flex;
@@ -886,6 +1009,9 @@
     </svg>
   </button>
 
+  <!-- For You Button -->
+  <button id="for-you-btn" title="For You">✨</button>
+
   <div id="info-card">
     <div class="card-header">
       <div class="card-category-pill" id="card-cat-pill"></div>
@@ -929,6 +1055,107 @@
       <div class="quotes-nav">
         <button class="quote-nav-btn" id="quote-prev">&#8592;</button>
         <button class="quote-nav-btn" id="quote-next">&#8594;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- For You Quiz Overlay -->
+<div id="for-you-overlay">
+  <div id="for-you-card">
+    <div class="fy-header">
+      <div class="fy-logo">
+        <svg viewBox="0 0 32 32" fill="#FF385C"><path d="M16 1C10.925 1 7 6.09 7 11.5c0 7.59 9 19.5 9 19.5s9-11.91 9-19.5C25 6.09 21.075 1 16 1zm0 14.5a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"/></svg>
+        For You
+      </div>
+      <button class="fy-close" id="fy-close">✕</button>
+    </div>
+    <div class="fy-progress">
+      <div class="fy-progress-dot" id="fy-dot-1"></div>
+      <div class="fy-progress-dot" id="fy-dot-2"></div>
+      <div class="fy-progress-dot" id="fy-dot-3"></div>
+    </div>
+
+    <!-- Step 1 -->
+    <div class="fy-step active" id="fy-step-1">
+      <div class="fy-question">What's your vibe?</div>
+      <div class="fy-subtitle">Pick the one that fits your Austin mood.</div>
+      <div class="fy-options">
+        <button class="fy-option" data-q="q1" data-val="eat">
+          <span class="fy-opt-icon">🍽️</span>
+          <div><div class="fy-opt-text">Eat &amp; drink my way through Austin</div><div class="fy-opt-sub">Restaurants, cafés, bars and food trucks</div></div>
+        </button>
+        <button class="fy-option" data-q="q1" data-val="music">
+          <span class="fy-opt-icon">🎵</span>
+          <div><div class="fy-opt-text">Live music and nightlife</div><div class="fy-opt-sub">Honky-tonks, cocktail bars, live venues</div></div>
+        </button>
+        <button class="fy-option" data-q="q1" data-val="outdoors">
+          <span class="fy-opt-icon">🌿</span>
+          <div><div class="fy-opt-text">Outdoors, parks and exploring</div><div class="fy-opt-sub">Parks, trails, lakes and landmarks</div></div>
+        </button>
+        <button class="fy-option" data-q="q1" data-val="wellness">
+          <span class="fy-opt-icon">🧘</span>
+          <div><div class="fy-opt-text">Wellness, culture and laid-back days</div><div class="fy-opt-sub">Yoga, spas, museums, meditation</div></div>
+        </button>
+      </div>
+      <div class="fy-actions">
+        <button class="fy-next" id="fy-next-1" disabled>Next</button>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="fy-step" id="fy-step-2">
+      <div class="fy-question">Who are you exploring with?</div>
+      <div class="fy-subtitle">We'll tailor picks to your crew.</div>
+      <div class="fy-options">
+        <button class="fy-option" data-q="q2" data-val="solo">
+          <span class="fy-opt-icon">👤</span>
+          <div><div class="fy-opt-text">Just me</div><div class="fy-opt-sub">Solo adventure, my own pace</div></div>
+        </button>
+        <button class="fy-option" data-q="q2" data-val="partner">
+          <span class="fy-opt-icon">💑</span>
+          <div><div class="fy-opt-text">Partner or date</div><div class="fy-opt-sub">Romantic spots, intimate vibes</div></div>
+        </button>
+        <button class="fy-option" data-q="q2" data-val="friends">
+          <span class="fy-opt-icon">👯</span>
+          <div><div class="fy-opt-text">Friends group</div><div class="fy-opt-sub">Fun, social, lively energy</div></div>
+        </button>
+        <button class="fy-option" data-q="q2" data-val="family">
+          <span class="fy-opt-icon">👨‍👩‍👧</span>
+          <div><div class="fy-opt-text">Family with kids</div><div class="fy-opt-sub">Kid-friendly, accessible, relaxed</div></div>
+        </button>
+      </div>
+      <div class="fy-actions">
+        <button class="fy-back" id="fy-back-2">Back</button>
+        <button class="fy-next" id="fy-next-2" disabled>Next</button>
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="fy-step" id="fy-step-3">
+      <div class="fy-question">What matters most to you?</div>
+      <div class="fy-subtitle">Pick up to 2.</div>
+      <div class="fy-options">
+        <button class="fy-option" data-q="q3" data-val="locals">
+          <span class="fy-opt-icon">🏆</span>
+          <div><div class="fy-opt-text">Most beloved by locals</div><div class="fy-opt-sub">Places hosts rave about most distinctively</div></div>
+        </button>
+        <button class="fy-option" data-q="q3" data-val="hidden">
+          <span class="fy-opt-icon">🤫</span>
+          <div><div class="fy-opt-text">Hidden gems, off the beaten path</div><div class="fy-opt-sub">Under the radar, not in every guidebook</div></div>
+        </button>
+        <button class="fy-option" data-q="q3" data-val="iconic">
+          <span class="fy-opt-icon">⭐</span>
+          <div><div class="fy-opt-text">Iconic Austin must-dos</div><div class="fy-opt-sub">The places everyone talks about</div></div>
+        </button>
+        <button class="fy-option" data-q="q3" data-val="value">
+          <span class="fy-opt-icon">💸</span>
+          <div><div class="fy-opt-text">Great value, nothing pretentious</div><div class="fy-opt-sub">Casual, authentic, no attitude</div></div>
+        </button>
+      </div>
+      <div class="fy-actions">
+        <button class="fy-back" id="fy-back-3">Back</button>
+        <button class="fy-next" id="fy-next-3" disabled>Show my picks</button>
       </div>
     </div>
   </div>
@@ -994,6 +1221,7 @@ const CATEGORIES = {
   night_club:      { label: 'Nightlife',      icon: '🎶',  color: '#E91E63' },
   art_gallery:     { label: 'Art',            icon: '🎨',  color: '#9C27B0' },
   wellness:        { label: 'Wellness',       icon: '🧘',  color: '#00A699' },
+  for_you:         { label: 'For You',        icon: '✨',  color: '#FF385C' },
 };
 
 // Get unique categories present in data
@@ -1101,7 +1329,7 @@ function selectCategory(cat) {
     const m = markers[key];
     if (!m) return;
 
-    const shouldShow = cat === 'all' || poi.category === cat;
+    const shouldShow = cat === 'all' || poi.category === cat || (cat === 'for_you' && poi.for_you);
     const isVisible = visibleMarkers.has(key);
 
     if (shouldShow && isVisible) {
@@ -1534,6 +1762,154 @@ addBtn.addEventListener('click', async () => {
 
 // Enter key submits
 addInput.addEventListener('keydown', e => { if (e.key === 'Enter') addBtn.click(); });
+
+// ── FOR YOU QUIZ ──
+(function() {
+  const overlay = document.getElementById('for-you-overlay');
+  const fyBtn   = document.getElementById('for-you-btn');
+  let answers   = { q1: null, q2: null, q3: [] };
+  let forYouActive = false;
+
+  // Open / close
+  fyBtn.addEventListener('click', () => {
+    if (forYouActive) {
+      clearForYou();
+    } else {
+      resetQuiz();
+      overlay.classList.add('visible');
+    }
+  });
+  document.getElementById('fy-close').addEventListener('click', closeQuiz);
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeQuiz(); });
+
+  function closeQuiz() { overlay.classList.remove('visible'); }
+
+  function resetQuiz() {
+    answers = { q1: null, q2: null, q3: [] };
+    showStep(1);
+    document.querySelectorAll('.fy-option').forEach(o => o.classList.remove('selected'));
+    document.getElementById('fy-next-1').disabled = true;
+    document.getElementById('fy-next-2').disabled = true;
+    document.getElementById('fy-next-3').disabled = true;
+    ['fy-dot-1','fy-dot-2','fy-dot-3'].forEach(id => document.getElementById(id).classList.remove('done'));
+  }
+
+  function showStep(n) {
+    document.querySelectorAll('.fy-step').forEach(s => s.classList.remove('active'));
+    document.getElementById(`fy-step-${n}`).classList.add('active');
+    for (let i = 1; i < n; i++) document.getElementById(`fy-dot-${i}`).classList.add('done');
+  }
+
+  // Option selection — Q1 and Q2 are single-select
+  document.querySelectorAll('.fy-option[data-q="q1"], .fy-option[data-q="q2"]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const q = btn.dataset.q;
+      document.querySelectorAll(`.fy-option[data-q="${q}"]`).forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      answers[q] = btn.dataset.val;
+      document.getElementById(q === 'q1' ? 'fy-next-1' : 'fy-next-2').disabled = false;
+    });
+  });
+
+  // Q3 is multi-select (up to 2)
+  document.querySelectorAll('.fy-option[data-q="q3"]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const val = btn.dataset.val;
+      if (btn.classList.contains('selected')) {
+        btn.classList.remove('selected');
+        answers.q3 = answers.q3.filter(v => v !== val);
+      } else if (answers.q3.length < 2) {
+        btn.classList.add('selected');
+        answers.q3.push(val);
+      }
+      document.getElementById('fy-next-3').disabled = answers.q3.length === 0;
+    });
+  });
+
+  // Navigation
+  document.getElementById('fy-next-1').addEventListener('click', () => showStep(2));
+  document.getElementById('fy-next-2').addEventListener('click', () => showStep(3));
+  document.getElementById('fy-back-2').addEventListener('click', () => showStep(1));
+  document.getElementById('fy-back-3').addEventListener('click', () => showStep(2));
+  document.getElementById('fy-next-3').addEventListener('click', () => {
+    closeQuiz();
+    applyForYou();
+  });
+
+  // ── SCORING ──
+  function scoreForYou(poi) {
+    let score = 0;
+    const cat = poi.category;
+    const gb  = poi.recommending_guidebooks || 0;
+    const tot = poi.total_guidebooks || 1;
+    const rec = poi.rec_count || 0;
+    const distinctiveness = gb / tot; // proxy for tf-idf
+
+    // Q1 vibe — category affinity
+    const vibeMap = {
+      eat:      { restaurant: 40, cafe: 35, bar: 25, store: 5 },
+      music:    { bar: 40, restaurant: 15, point_of_interest: 20 },
+      outdoors: { park: 40, point_of_interest: 25, museum: 10 },
+      wellness: { wellness: 45, park: 20, cafe: 10, museum: 10 },
+    };
+    score += (vibeMap[answers.q1] || {})[cat] || 0;
+
+    // Q2 who — crew modifier
+    const crewMap = {
+      solo:    { cafe: 15, bar: 10, point_of_interest: 12, museum: 12, wellness: 10 },
+      partner: { restaurant: 15, wellness: 15, park: 10, museum: 10 },
+      friends: { bar: 18, restaurant: 12, point_of_interest: 8 },
+      family:  { park: 20, museum: 18, point_of_interest: 12, cafe: 8 },
+    };
+    score += (crewMap[answers.q2] || {})[cat] || 0;
+
+    // Q3 what matters
+    if (answers.q3.includes('locals'))  score += distinctiveness * 35;
+    if (answers.q3.includes('hidden'))  score += gb <= 15 ? 28 : gb <= 40 ? 12 : 0;
+    if (answers.q3.includes('iconic'))  score += Math.log1p(rec) * 4;
+    if (answers.q3.includes('value'))   score += ['bar','cafe','restaurant','park'].includes(cat) ? 12 : 0;
+
+    return score;
+  }
+
+  function applyForYou() {
+    // Score and pick top 12
+    const ranked = [...POIS]
+      .map(p => ({ poi: p, score: scoreForYou(p) }))
+      .filter(x => x.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 12)
+      .map(x => x.poi);
+
+    // Tag POIs
+    POIS.forEach(p => delete p.for_you);
+    ranked.forEach(p => p.for_you = true);
+
+    // Add For You to category bar if not already there
+    if (!document.querySelector('.cat-btn[data-cat="for_you"]')) {
+      const cfg = CATEGORIES['for_you'];
+      const btn = document.createElement('button');
+      btn.className = 'cat-btn';
+      btn.dataset.cat = 'for_you';
+      btn.innerHTML = `<span class="cat-icon">${cfg.icon}</span><span class="cat-label">${cfg.label}</span>`;
+      btn.addEventListener('click', () => selectCategory('for_you'));
+      document.getElementById('category-bar').appendChild(btn);
+    }
+
+    forYouActive = true;
+    fyBtn.classList.add('active');
+    selectCategory('for_you');
+  }
+
+  function clearForYou() {
+    POIS.forEach(p => delete p.for_you);
+    forYouActive = false;
+    fyBtn.classList.remove('active');
+    const fyBtnEl = document.querySelector('.cat-btn[data-cat="for_you"]');
+    if (fyBtnEl) fyBtnEl.remove();
+    selectCategory('all');
+  }
+})();
 
 // "Example" link fills in example address
 document.getElementById('home-address-example').addEventListener('click', () => {
